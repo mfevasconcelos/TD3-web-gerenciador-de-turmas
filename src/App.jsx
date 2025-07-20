@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { HashRouter, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import HomePage from './pages/HomePage';
 import AlunosPage from './pages/AlunosPage';
@@ -8,7 +8,7 @@ import Turmaspage from './pages/TurmasPage';
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <div className="container">
         <nav>
           <Link to="/" className="nav-button">Home</Link>
@@ -26,7 +26,7 @@ function App() {
           <Route path="/turmas" element={<Turmaspage />} />
         </Routes>
       </div>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
