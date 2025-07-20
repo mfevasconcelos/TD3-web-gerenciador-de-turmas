@@ -1,0 +1,289 @@
+:root {
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    color-scheme: light dark;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: #242424;
+
+    --primary-color: #333;
+    --color-title: #646cff;
+    --white-color: #ffffff;
+    --color-button: #8b49e1;
+    --color-button-second: #1a1a1a;
+}
+
+ body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+h1 {
+    font-size: 3.2em;
+    line-height: 1.1;
+    color: var(--color-button);
+    font-style: italic;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    font-style: italic;
+}
+
+li {
+    background-color: var(--primary-color);
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+button {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    background-color: var(--color-button-second);
+    cursor: pointer;
+    transition: border-color 0.25s;
+    color: var(--white-color);
+    font-style: italic;
+}
+
+button:hover {
+    border-color: var(--white-color);
+}
+
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; 
+    justify-content: flex-end;
+}
+
+.list-item-info {
+    text-align: left;
+}
+
+/* CSS NAVBAR */
+
+nav {
+    margin-bottom: 2rem;
+}
+
+.nav-button {
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding: 10px 20px;
+    background-color: var(--color-button);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    display: inline-block;
+}
+
+.nav-button:hover {
+    background-color: var(--white-color);
+    color: var(--color-button);
+}
+
+/* CSS FORMS */
+
+.turma-form {
+    max-width: 600px;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.turma-fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.turma-legend {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+.turma-field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.turma-field label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.turma-field input,
+.turma-field select {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.turma-field select {
+    height: 120px;
+}
+
+.turma-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 1rem;
+    justify-content: center;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.turma-buttons .save {
+    background-color: var(--color-button);
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.turma-buttons .cancel {
+    background-color: var(--color-button-second);
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* CSS Dashboard */
+.dashboard-container {
+    width: 100%;
+}
+
+.stats-container {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin: 3rem 0;
+}
+
+.stat-card {
+    background-color: var(--primary-color);
+    padding: 1.5rem;
+    border-radius: 8px;
+    min-width: 200px;
+    text-align: center;
+    flex: 1;
+}
+
+.stat-card h2 {
+    font-size: 2.5em;
+    margin: 0;
+    color: var(--color-button);
+}
+
+.stat-card p {
+    margin: 0.5rem 0 0;
+    font-size: 1.1em;
+    color: var(--white-color);
+}
+
+.quick-access-container {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.quick-access-button {
+    background-color: var(--color-button);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 1.2em;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.quick-access-button:hover {
+    background-color: var(--white-color);
+    color: var(--color-button);
+    transform: translateY(-3px);
+}
+
+/* MEDIA QUERIES */
+@media (max-width: 768px) {
+  .stats-container {
+    flex-direction: column; 
+    gap: 1rem;
+  }
+
+  .quick-access-container {
+    flex-direction: column; 
+    align-items: center; 
+    gap: 1rem;
+  }
+
+  .quick-access-button {
+    width: 80%; 
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2.5em; 
+  }
+
+  .nav-button {
+    padding: 8px 12px; 
+    font-size: 0.9em;
+  }
+
+  .stats-container {
+    margin: 2rem 0; 
+  }
+
+  .stat-card {
+    min-width: 0; 
+    width: 85%;
+  }
+
+  nav {
+      flex-wrap: wrap;
+      justify-content: center;
+  }
+
+  li {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+  }
+
+  .button-container {
+      width: 100%;
+      justify-content: flex-start;
+  }
+}
