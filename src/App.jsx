@@ -11,19 +11,19 @@ function App() {
     <BrowserRouter>
       <div className="container">
         <nav>
-          <Link to="TD2-web-gerenciador-de-turmas/" className="nav-button">Home</Link>
-          <Link to="TD2-web-gerenciador-de-turmas/alunos" className="nav-button">Alunos</Link>
-          <Link to="TD2-web-gerenciador-de-turmas/professores" className="nav-button">Professores</Link>
-          <Link to="TD2-web-gerenciador-de-turmas/disciplinas" className="nav-button">Disciplinas</Link>
-          <Link to="TD2-web-gerenciador-de-turmas/turmas" className="nav-button">Turmas</Link>
+          <Link to="/" className="nav-button">Home</Link>
+          <Link to="/alunos" className="nav-button">Alunos</Link>
+          <Link to="/professores" className="nav-button">Professores</Link>
+          <Link to="/disciplinas" className="nav-button">Disciplinas</Link>
+          <Link to="/turmas" className="nav-button">Turmas</Link>
         </nav>
 
         <Routes>
-          <Route path="TD2-web-gerenciador-de-turmas/" element={<HomePage />} />
-          <Route path="TD2-web-gerenciador-de-turmas/alunos" element={<AlunosPage />} />
-          <Route path="TD2-web-gerenciador-de-turmas/professores" element={<ProfessoresPage />} />
-          <Route path="TD2-web-gerenciador-de-turmas/disciplinas" element={<DisciplinasPage />} />
-          <Route path="TD2-web-gerenciador-de-turmas/turmas" element={<Turmaspage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/alunos" element={<AlunosPage />} />
+          <Route path="/professores" element={<ProfessoresPage />} />
+          <Route path="/disciplinas" element={<DisciplinasPage />} />
+          <Route path="/turmas" element={<Turmaspage />} />
         </Routes>
       </div>
     </BrowserRouter>
