@@ -6,7 +6,7 @@ Sistema de gerenciamento de turmas que permite o cadastro e a manipulação de A
 
 ## Principais Funcionalidades
 ### Dashboard Inicial
-- Apresenta um resumo com a quantidade total de alunos, professores, disciplinas e turmas cadastradas, com dados consumidos em tempo real da API.
+- Apresenta um resumo com a quantidade total de alunos, professores e turmas cadastradas, com dados consumidos em tempo real da API.
 ### Gerenciamento Completo (CRUD)
 - Alunos: Cadastro, edição e exclusão de alunos, com associação a uma turma.
 - Professores: Cadastro, edição e exclusão de professores, com associação a uma disciplina.
