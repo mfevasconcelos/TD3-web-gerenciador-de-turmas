@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../App.css'; // reutilizando o CSS de TurmaForm e ProfessorForm
+import '../App.css'; 
 
 const DisciplinaForm = ({ disciplina, onSave, onCancel }) => {
   const [formData, setFormData] = useState({

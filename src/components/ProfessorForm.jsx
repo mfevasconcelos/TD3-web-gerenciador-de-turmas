@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { disciplinas } from '../data';
+// import { disciplinas } from '../data';
 import '../App.css'; 
 
-const ProfessorForm = ({ professor, onSave, onCancel }) => {
+const ProfessorForm = ({ professor, onSave, onCancel, disciplinas = [] }) => {
   const [formData, setFormData] = useState({
     nome: '',
     email: '',

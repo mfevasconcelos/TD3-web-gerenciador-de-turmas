@@ -1,23 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../App.css';
-import { 
-  alunos as initialAlunos, 
-  professores as initialProfessores, 
-  disciplinas as initialDisciplinas, 
-  turmas as initialTurmas 
-} from '../data'; 
+// import { 
+//   alunos as initialAlunos, 
+//   professores as initialProfessores, 
+//   disciplinas as initialDisciplinas, 
+//   turmas as initialTurmas 
+// } from '../data'; 
+
+const API_BASE_URL = "/api";
 
 const HomePage = () => {
-  const loadData = (key, initialData) => {
-    const savedData = localStorage.getItem(key);
-    return savedData ? JSON.parse(savedData) : initialData;
+  const [totalAlunos, setTotalAlunos] = useState(0);
+  const [totalProfessores, setTotalProfessores] = useState(0);
+  const [totalDisciplinas, setTotalDisciplinas] = useState(0);
+  const [totalTurmas, setTotalTurmas] = useState(0);
+
+  const fetchCount = async (endpoint, setter) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/${endpoint}`);
+      const data = await response.json();
+      setter(data.length); 
+    } catch (error) {
+      console.error(`Erro ao buscar contagem para ${endpoint}:`, error);
+      setter(0); 
+    }
   };
 
-  const totalAlunos = loadData('alunos', initialAlunos).length;
-  const totalProfessores = loadData('professores', initialProfessores).length;
-  const totalDisciplinas = loadData('disciplinas', initialDisciplinas).length;
-  const totalTurmas = loadData('turmas', initialTurmas).length;
+  useEffect(() => {
+    fetchCount('alunos', setTotalAlunos);
+    fetchCount('professores', setTotalProfessores);
+    fetchCount('disciplinas', setTotalDisciplinas);
+    fetchCount('turmas', setTotalTurmas);
+  }, []);
 
   return (
     <div className="dashboard-container">

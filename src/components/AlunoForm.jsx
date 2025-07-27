@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../App.css'; 
 
-const AlunoForm = ({ aluno, turmas, onSave, onCancel }) => {
+const AlunoForm = ({ aluno, turmas = [], onSave, onCancel }) => {
   const [formData, setFormData] = useState({
     nome: '',
     matricula: '',

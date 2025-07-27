@@ -1,36 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
 import TurmaForm from '../components/TurmaForm.jsx';
-import { 
-  turmas as initialTurmas, 
-  professores as initialProfessores, 
-  alunos as initialAlunos, 
-  disciplinas as initialDisciplinas 
-} from '../data'; 
+
+const API_BASE_URL = "/api";
 
 function TurmasPage() {
-  const loadData = (key, initialData) => {
-    const savedData = localStorage.getItem(key);
-    return savedData ? JSON.parse(savedData) : initialData;
-  };
-
-  const [turmas, setTurmas] = useState(() => loadData('turmas', initialTurmas));
-  const [professores, setProfessores] = useState(() => loadData('professores', initialProfessores));
-  const [alunos, setAlunos] = useState(() => loadData('alunos', initialAlunos));
-  const [disciplinas, setDisciplinas] = useState(() => loadData('disciplinas', initialDisciplinas));
+  const [turmas, setTurmas] = useState([]);
+  const [professores, setProfessores] = useState([]);
+  const [alunos, setAlunos] = useState([]);
+  const [disciplinas, setDisciplinas] = useState([]);
 
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [turmaToEdit, setTurmaToEdit] = useState(null);
-
   const formRef = useRef(null);
 
+  const fetchData = async (endpoint, setter) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/${endpoint}`);
+      const data = await response.json();
+      setter(data);
+    } catch (error) {
+      console.error(`Erro ao buscar ${endpoint}:`, error);
+    }
+  };
+
   useEffect(() => {
-    localStorage.setItem('turmas', JSON.stringify(turmas));
-  }, [turmas]);
-  
-  useEffect(() => {
-    if (!localStorage.getItem('professores')) localStorage.setItem('professores', JSON.stringify(initialProfessores));
-    if (!localStorage.getItem('alunos')) localStorage.setItem('alunos', JSON.stringify(initialAlunos));
-    if (!localStorage.getItem('disciplinas')) localStorage.setItem('disciplinas', JSON.stringify(initialDisciplinas));
+    fetchData('turmas', setTurmas);
+    fetchData('professores', setProfessores);
+    fetchData('alunos', setAlunos);
+    fetchData('disciplinas', setDisciplinas);
   }, []);
 
   useEffect(() => {
@@ -39,34 +36,22 @@ function TurmasPage() {
     }
   }, [isFormVisible]);
 
-  const handleSave = (turmaData) => {
-    const disciplineIdsFromProfessors = turmaData.professorIds
-      .map(profId => {
-        const professor = professores.find(p => p.id === profId); //
-        return professor ? Number(professor.disciplinaId) : null;
-      })
-      .filter(id => id !== null);
+  const handleSave = async (turmaData) => {
+    const isUpdating = !!turmaData.id;
+    const url = isUpdating ? `${API_BASE_URL}/turmas/${turmaData.id}` : `${API_BASE_URL}/turmas`;
+    const method = isUpdating ? 'PUT' : 'POST';
 
-    const combinedDisciplineIds = new Set([
-      ...turmaData.disciplinaIds,
-      ...disciplineIdsFromProfessors
-    ]);
-
-    const finalTurmaData = {
-      ...turmaData,
-      disciplinaIds: Array.from(combinedDisciplineIds)
-    };
-
-    if (finalTurmaData.id) {
-      const updatedTurmas = turmas.map(turma =>
-        turma.id === finalTurmaData.id ? finalTurmaData : turma
-      );
-      setTurmas(updatedTurmas);
-    } else {
-      const newId = turmas.length > 0 ? Math.max(...turmas.map(turma => turma.id)) + 1 : 301;
-      const novaTurma = { ...finalTurmaData, id: newId };
-      setTurmas([...turmas, novaTurma]);
+    try {
+      await fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(turmaData),
+      });
+      fetchData('turmas', setTurmas); 
+    } catch (error) {
+      console.error("Erro ao salvar turma:", error);
     }
+
     setIsFormVisible(false);
     setTurmaToEdit(null);
   };
@@ -86,11 +71,15 @@ function TurmasPage() {
     setTurmaToEdit(null);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir esta turma?')) {
-      const updatedTurmas = turmas.filter(turma => turma.id !== id);
-      setTurmas(updatedTurmas);
-      console.log('Turma com ID ' + id + ' excluída.');
+      try {
+        await fetch(`${API_BASE_URL}/turmas/${id}`, { method: 'DELETE' });
+        fetchData('turmas', setTurmas); 
+        console.log('Turma com ID ' + id + ' excluída.');
+      } catch (error) {
+        console.error("Erro ao deletar turma:", error);
+      }
     }
   };
 
@@ -114,31 +103,31 @@ function TurmasPage() {
                   <td>
                     <div className='list-item-info'>
                       <ul style={{ paddingLeft: '1rem', margin: 0, listStyle: 'none' }}>
-                      {turma.professorIds.map(id => {
-                        const professor = professores.find(p => p.id === id); //
-                        return professor ? <li key={id}>{professor.nome}</li> : null;
-                      })}
-                    </ul>
+                        {turma.professorIds.map(id => {
+                          const professor = professores.find(p => p.id === id);
+                          return professor ? <li key={id}>{professor.nome}</li> : null;
+                        })}
+                      </ul>
                     </div>
                   </td>
                   <td>
                     <div className='list-item-info'>
-                    <ul style={{ paddingLeft: '1rem', margin: 0, listStyle: 'none' }}>
-                      {turma.alunoIds.map(id => {
-                        const aluno = alunos.find(a => a.id === id); //
-                        return aluno ? <li key={id}>{aluno.nome}</li> : null;
-                      })}
-                    </ul>
+                      <ul style={{ paddingLeft: '1rem', margin: 0, listStyle: 'none' }}>
+                        {turma.alunoIds.map(id => {
+                          const aluno = alunos.find(a => a.id === id);
+                          return aluno ? <li key={id}>{aluno.nome}</li> : null;
+                        })}
+                      </ul>
                     </div>
                   </td>
                   <td>
                     <div className='list-item-info'>
-                    <ul style={{ paddingLeft: '1rem', margin: 0, listStyle: 'none' }}>
-                      {turma.disciplinaIds.map(id => {
-                        const disciplina = disciplinas.find(d => d.id === id); //
-                        return disciplina ? <li key={id}>{disciplina.nome}</li> : null;
-                      })}
-                    </ul>
+                      <ul style={{ paddingLeft: '1rem', margin: 0, listStyle: 'none' }}>
+                        {turma.disciplinaIds.map(id => {
+                          const disciplina = disciplinas.find(d => d.id === id);
+                          return disciplina ? <li key={id}>{disciplina.nome}</li> : null;
+                        })}
+                      </ul>
                     </div>
                   </td>
                 </tr>
@@ -151,19 +140,19 @@ function TurmasPage() {
           </div>
         ))}
       </div>
-      <button onClick={handleCreateNew} style={{ marginBottom: '1.5rem', marginTop: '1rem'}}>
+      <button onClick={handleCreateNew} style={{ marginBottom: '1.5rem', marginTop: '1rem' }}>
         Adicionar Nova Turma
       </button>
       {isFormVisible && (
         <div ref={formRef}>
-        <TurmaForm
-          turma={turmaToEdit}
-          onSave={handleSave}
-          onCancel={handleCancel}
-          professores={professores}
-          alunos={alunos}
-          disciplinas={disciplinas}
-        />
+          <TurmaForm
+            turma={turmaToEdit}
+            onSave={handleSave}
+            onCancel={handleCancel}
+            professores={professores}
+            alunos={alunos}
+            disciplinas={disciplinas}
+          />
         </div>
       )}
     </div>

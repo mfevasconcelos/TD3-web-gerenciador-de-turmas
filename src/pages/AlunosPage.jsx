@@ -1,66 +1,68 @@
 import React, { useState, useEffect, useRef } from 'react';
 import AlunoForm from '../components/AlunoForm';
-import { alunos as initialAlunos, turmas as initialTurmas } from '../data';
+
+const ALUNOS_API_URL = "/api/alunos";
+const TURMAS_API_URL = "/api/turmas";
 
 function AlunosPage() {
-  const loadData = (key, initialData) => {
-    const savedData = localStorage.getItem(key);
-    return savedData ? JSON.parse(savedData) : initialData;
-  };
-
-  const [alunos, setAlunos] = useState(() => loadData('alunos', initialAlunos));
-  const [turmas, setTurmas] = useState(() => loadData('turmas', initialTurmas));
-
+  const [alunos, setAlunos] = useState([]);
+  const [turmas, setTurmas] = useState([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [alunoToEdit, setAlunoToEdit] = useState(null);
-
   const formRef = useRef(null);
 
-  useEffect(() => {
-    localStorage.setItem('alunos', JSON.stringify(alunos));
-  }, [alunos]);
-  useEffect(() => {
-    localStorage.setItem('turmas', JSON.stringify(turmas));
-  }, [turmas]);
+  const fetchAlunos = async () => {
+    try {
+      const response = await fetch(ALUNOS_API_URL);
+      const data = await response.json();
+      setAlunos(data);
+    } catch (error) {
+      console.error("Erro ao buscar alunos:", error);
+    }
+  };
+
+  const fetchTurmas = async () => {
+    try {
+      const response = await fetch(TURMAS_API_URL);
+      const data = await response.json();
+      setTurmas(data);
+    } catch (error) {
+      console.error("Erro ao buscar turmas:", error);
+    }
+  };
 
   useEffect(() => {
-          if (isFormVisible && formRef.current) {
-            formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }, [isFormVisible]);
+    fetchAlunos();
+    fetchTurmas();
+  }, []);
 
-  const handleSave = (alunoData) => {
-    let updatedTurmas = JSON.parse(JSON.stringify(turmas)); 
-    if (alunoData.id) {
-      const originalAluno = alunos.find(a => a.id === alunoData.id);
-      const newTurmaId = Number(alunoData.turmaId);
-      if (originalAluno && Number(originalAluno.turmaId) !== newTurmaId) {
-        const oldTurma = updatedTurmas.find(t => t.id === Number(originalAluno.turmaId));
-        if (oldTurma) {
-          oldTurma.alunoIds = oldTurma.alunoIds.filter(id => id !== alunoData.id);
-        }
-      }
+  useEffect(() => {
+    if (isFormVisible && formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [isFormVisible]);
 
-      const newTurma = updatedTurmas.find(t => t.id === newTurmaId);
-      if (newTurma && !newTurma.alunoIds.includes(alunoData.id)) {
-        newTurma.alunoIds.push(alunoData.id);
-      }
-      const updatedAlunos = alunos.map(aluno =>
-        aluno.id === alunoData.id ? { ...alunoData, turmaId: newTurmaId } : aluno
-      );
-      setAlunos(updatedAlunos);
-    } else {
-      const newId = alunos.length > 0 ? Math.max(...alunos.map(aluno => aluno.id)) + 1 : 201;
-      const newTurmaId = Number(alunoData.turmaId);
-      const novoAluno = { ...alunoData, id: newId, turmaId: newTurmaId };
-      const turmaParaAdicionar = updatedTurmas.find(t => t.id === newTurmaId);
-      if (turmaParaAdicionar) {
-        turmaParaAdicionar.alunoIds.push(newId);
-      }
-      setAlunos([...alunos, novoAluno]);
+  const handleSave = async (alunoData) => {
+    const isUpdating = !!alunoData.id;
+    const url = isUpdating ? `${ALUNOS_API_URL}/${alunoData.id}` : ALUNOS_API_URL;
+    const method = isUpdating ? 'PUT' : 'POST';
+
+    const dataToSend = {
+      ...alunoData,
+      turmaId: Number(alunoData.turmaId)
+    };
+
+    try {
+      await fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToSend),
+      });
+      fetchAlunos(); 
+    } catch (error) {
+      console.error("Erro ao salvar aluno:", error);
     }
 
-    setTurmas(updatedTurmas);
     setIsFormVisible(false);
     setAlunoToEdit(null);
   };
@@ -80,39 +82,28 @@ function AlunosPage() {
     setAlunoToEdit(null);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este aluno?')) {
-      const alunoToDelete = alunos.find(aluno => aluno.id === id);
-      if (!alunoToDelete) return;
-
-      if (alunoToDelete.turmaId) {
-        const updatedTurmas = turmas.map(turma => {
-          if (turma.id === Number(alunoToDelete.turmaId)) {
-            return { ...turma, alunoIds: turma.alunoIds.filter(alunoId => alunoId !== id) };
-          }
-          return turma;
-        });
-        setTurmas(updatedTurmas);
+      try {
+        await fetch(`${ALUNOS_API_URL}/${id}`, { method: 'DELETE' });
+        fetchAlunos(); 
+        console.log('Aluno com ID ' + id + ' excluído.');
+      } catch (error) {
+        console.error("Erro ao deletar aluno:", error);
       }
-
-      const updatedAlunos = alunos.filter(aluno => aluno.id !== id);
-      setAlunos(updatedAlunos);
-
-      console.log('Aluno com ID ' + id + ' excluído.');
     }
   };
 
   return (
     <div>
       <h1>Alunos</h1>
-
       <ul>
         {alunos.map(aluno => (
           <li key={aluno.id}>
             <div className='list-item-info'>
               <div>{aluno.nome}</div>
               <div>Matrícula: {aluno.matricula}</div>
-              <div>Turma: {turmas.find(d => d.id === Number(aluno.turmaId))?.nome || 'Não encontrada'}</div>
+              <div>Turma: {turmas.find(t => t.id === Number(aluno.turmaId))?.nome || 'Não encontrada'}</div>
             </div>
             <div className='button-container'>
               <button onClick={() => handleEdit(aluno)}>Editar</button>
@@ -122,8 +113,8 @@ function AlunosPage() {
         ))}
       </ul>
 
-      <button onClick={handleCreateNew} style={{ marginBottom: '1.5rem', marginTop: '1rem'}} >Adicionar Novo Aluno</button>
-      
+      <button onClick={handleCreateNew} style={{ marginBottom: '1.5rem', marginTop: '1rem' }}>Adicionar Novo Aluno</button>
+
       {isFormVisible && (
         <div ref={formRef}>
         <AlunoForm 
